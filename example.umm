@@ -1,0 +1,35 @@
+[info]
+version = "0.0.1"
+class = "abook"
+uuid = ""
+
+[metadata]
+cover = "cover.jpg"
+title = "Storm Front"
+author = "Jim Butcher"
+narrator = "James Marsters"
+date = 2001-01-01
+publisher = "Penguin ROC"
+genres = [
+  "Fantasy",
+  "Urban Fantasy",
+  "Mystery",
+  "Fiction",
+  "Paranormal",
+  "Magic",
+  "Supernatural",
+  "Crime",
+  "Science Fiction Fantasy"
+]
+tags = [
+  "Harry Dresden",
+  "The Dresden Files"
+]
+
+[metadata.identifiers]
+isbn = "9780451457813"
+asin = "B002CSL0BQ"
+
+[metadata.series]
+name = "The Dresden Files"
+volume = 1

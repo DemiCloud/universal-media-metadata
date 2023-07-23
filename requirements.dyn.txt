@@ -1,0 +1,7 @@
+typer
+rich
+typing
+tomlkit
+packaging
+jsonschema
+dataclasses

@@ -1,0 +1,10 @@
+#!./.venv/bin/python3
+""" UMM Command Line Application"""
+import umm
+
+__author__ = "DemiCloud"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
+if __name__ == "__main__":
+  umm.cli("metadata")
