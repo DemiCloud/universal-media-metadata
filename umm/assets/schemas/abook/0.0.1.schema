@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "info": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "version": {
+          "type": "version"
+        }
+      },
+      "required": [
+        "class",
+        "uuid",
+        "version"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "cover": {
+          "type": "path"
+        },
+        "date": {
+          "type": "date"
+        },
+        "genres": {
+          "type": "array"
+        },
+        "narrator": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        },
+        "identifiers": {
+          "type": "object",
+          "properties": {
+            "asin": {
+              "type": "string"
+            },
+            "isbn": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "asin",
+            "isbn"
+          ]
+        },
+        "series": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "volume": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "volume"
+          ]
+        }
+      },
+      "required": [
+        "author",
+        "cover",
+        "date",
+        "genres",
+        "narrator",
+        "publisher",
+        "tags",
+        "title",
+        "identifiers",
+        "series"
+      ]
+    }
+  },
+  "required": [
+    "info",
+    "metadata"
+  ]
+}

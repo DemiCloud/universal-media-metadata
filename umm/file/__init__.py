@@ -9,10 +9,9 @@ import os
 import sys
 import tomllib
 from pathlib import Path
+from jinja2 import Template
 
-import jsonschema
 import typer
-from packaging import version
 # This overwrites `print` on purpose
 from rich import print  # pylint: disable=redefined-builtin
 from rich.pretty import pprint
@@ -67,7 +66,22 @@ def convert(
       umm = Schema.normalize(umm,os.path.dirname(input_file))
       Schema.validate(umm)
     case "opf":
-      print(f"XML here: {output_file}")
+      with open(input_file,"rb") as file:
+        # print(file.read())
+        # umm=tomlkit.parse(file.read()).unwrap()
+        umm = tomllib.load(file)
+      umm = Schema.normalize(umm,os.path.dirname(input_file))
+      Schema.validate(umm)
+      template_file= Path(
+        os.path.join(
+          "./umm/assets",
+          "opf",
+          f"{str(umm['info']['version'])}.template"
+        )
+      )
+      with open(template_file, mode="r", encoding="utf-8") as file:
+        template = Template(file.read())
+        print(template.render(umm=umm))
 
 @cmd.command()
 def generate():

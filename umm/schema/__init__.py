@@ -6,30 +6,40 @@ import json
 import os
 from pathlib import Path
 
-from jsonschema import Draft4Validator, FormatChecker, validators
+from jsonschema import Draft202012Validator, validators
 from jsonschema.exceptions import ValidationError
 from packaging import version
+
 # endregion
 
-# region Custom Validators
-all_validators = dict(Draft4Validator.VALIDATORS)
+umm_checker= Draft202012Validator.TYPE_CHECKER.redefine_many(
+  {
+    "version": lambda _, instance: isinstance(instance, version.Version),
+    "path": lambda _, instance: isinstance(instance, Path),
+    "date": lambda _, instance: isinstance(instance, datetime.date),
+  }
+)
 
-def is_version(validator, value, instance, schema) -> None:
-  """Custom jsonscheme validation method for Version"""
-  # pylint: disable=unused-argument
-  if not isinstance(instance,version.Version):
-    yield ValidationError(f"{instance} is not a valid version number")
-all_validators['is_version'] = is_version
+UmmValidator = validators.extend(Draft202012Validator, type_checker=umm_checker)
 
-def is_path(validator, value, instance, schema) -> None:
-  """Custom jsonscheme validation method for pathlib Paths"""
-  # pylint: disable=unused-argument
-  if not isinstance(instance,Path):
-    yield ValidationError(f"{instance} is not a valid path")
-all_validators['is_path'] = is_path
-# endregion
-
-
+def validate(
+  umm: dict,
+) -> None:
+  """Validate UMM
+  """
+  umm_version = umm['info']['version']
+  schema_file = Path(
+    os.path.join(
+      "./umm/assets/schemas/",
+      umm['info']['class'],
+      f"{str(umm_version)}.schema"
+    )
+  )
+  with open(schema_file,"rb") as file:
+    schema = json.load(file)
+  validator = UmmValidator(schema)
+  validator.validate(umm)
+  print("validation successful")
 
 def normalize(
   umm: dict,
@@ -62,15 +72,3 @@ def normalize(
   except TypeError:
     print("metadata.cover should be a valid path")
   return umm
-
-def schema_validate(
-  umm: dict,
-) -> None:
-  """Validate UMM
-  """
-  pass
-  # umm_version = umm['info']['version']
-  # schema_file = Path(os.path.join(SCHEMA_DIR),f"{str(umm_version)}.schema")
-  # with open(schema_file,"rb") as file:
-  #   schema = json.load(file)
-  # validate(umm,schema=schema)

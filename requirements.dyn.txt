@@ -5,3 +5,4 @@ tomlkit
 packaging
 jsonschema
 dataclasses
+jinja2
