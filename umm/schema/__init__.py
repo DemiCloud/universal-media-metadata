@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, validators
-from jsonschema.exceptions import ValidationError
+from jsonschema.exceptions import ValidationError, SchemaError
 from packaging import version
 
 # endregion
@@ -38,8 +38,11 @@ def validate(
   with open(schema_file,"rb") as file:
     schema = json.load(file)
   validator = UmmValidator(schema)
-  validator.validate(umm)
-  print("validation successful")
+  try:
+    validator.validate(umm)
+    return True
+  except ValidationError:
+    return False
 
 def normalize(
   umm: dict,
