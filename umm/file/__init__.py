@@ -19,8 +19,8 @@ from packaging import version
 from rich import print  # pylint: disable=redefined-builtin
 from typing_extensions import Annotated
 
-from ..schema import normalize
-from ..schema import validate as validate_schema
+from umm.schema import normalize
+from umm.schema import validate as validate_schema
 
 # endregion
 
@@ -111,11 +111,11 @@ def convert(
         case _:
             template_version = _version_map(file_type.value, umm_version)
             template_file = (
-                importlib.resources.files("umm")
-                / "assets"
-                / "templates"
-                / file_type.value
-                / f"{template_version}.template"
+                importlib.resources.files("umm") /
+                "assets" /
+                "templates" /
+                file_type.value /
+                f"{template_version}.template"
             )
             print(_version_map("opf", umm_version))
             with open(template_file, mode="r", encoding="utf-8") as file:
