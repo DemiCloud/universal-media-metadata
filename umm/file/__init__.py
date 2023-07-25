@@ -46,17 +46,17 @@ filetypes = _get_filetypes_enum()
 
 @cmd.command()
 def test():
-  pass
+  """Test command
+  """
 
 def _version_map(
   file_type: str,
   file_version: version.Version
 ) -> str:
-  mapping_file = Path(
-    os.path.join(
-      "./umm/assets",
-      "mapping.json"
-    )
+  mapping_file = (
+    importlib.resources.files("umm") /
+    "assets" /
+    "mapping.json"
   )
   with open(mapping_file, "rb") as file:
     mappings = json.load(file)
@@ -65,6 +65,14 @@ def _version_map(
 def get_umm(
   input_file: str
 ):
+  """Opens and parses the UMM file
+
+  Args:
+      input_file (str): Path to the UMM file
+
+  Returns:
+      _type_: returns the UMM file as a dict
+  """
   input_file = os.path.abspath(os.path.expanduser(input_file))
   with open(input_file,"rb") as file:
     umm = tomllib.load(file)
@@ -80,7 +88,12 @@ def validate(
       "-f"
     )
   ]
-) -> dict:
+) -> None:
+  """Validates a UMM file
+
+  Args:
+      input_file: UMM file to validate
+  """
   umm = get_umm(input_file)
   if Schema.validate(umm):
     print(f"{input_file} is a valid UMM version {umm['info']['version']} file")
@@ -114,6 +127,7 @@ def convert(
 ) -> None:
   """Convert UMM to other filetypes
   """
+  output_file = os.path.abspath(os.path.expanduser(output_file))
   umm = get_umm(input_file)
   umm_version = umm['info']['version']
   match file_type.value:
@@ -137,7 +151,8 @@ def convert(
       print(_version_map("opf",umm_version))
       with open(template_file, mode="r", encoding="utf-8") as file:
         template = Template(file.read())
-      print(template.render(umm=umm))
+      with open(output_file, "w", encoding="utf-8") as file:
+        file.write(template.render(umm=umm))
 
 @cmd.command()
 def generate():

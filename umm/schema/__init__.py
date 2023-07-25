@@ -2,12 +2,13 @@
 
 # region imports
 import datetime
+import importlib
 import json
 import os
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, validators
-from jsonschema.exceptions import ValidationError, SchemaError
+from jsonschema.exceptions import SchemaError, ValidationError
 from packaging import version
 
 # endregion
@@ -34,6 +35,13 @@ def validate(
       umm['info']['class'],
       f"{str(umm_version)}.schema"
     )
+  )
+  schema_file = (
+    importlib.resources.files("umm") /
+    "assets" /
+    "schemas" /
+    umm['info']['class'] /
+    f"{str(umm_version)}.schema"
   )
   with open(schema_file,"rb") as file:
     schema = json.load(file)

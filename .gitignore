@@ -1,6 +1,7 @@
 ### Other ###
 # swap files
 *.swp
+test/
 test.py
 
 ### Git ###
