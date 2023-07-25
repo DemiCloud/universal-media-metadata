@@ -31,7 +31,6 @@ cmd = typer.Typer()
 # This section dynamically creates a list of options
 # for filetypes to choose for conversion
 def _get_filetypes_enum() -> Enum:
-    type_dict = {"id3": "id3"}
     templates = [
         resource.name
         for resource in (
@@ -39,12 +38,14 @@ def _get_filetypes_enum() -> Enum:
         ).iterdir()
         if resource.is_dir()
     ]
-    for template in templates:
-        type_dict[template] = template
-    return Enum("filetype", type_dict)
+
+    types_dict = {template: template for template in templates}
+
+    return Enum("filetype", types_dict)
 
 
 filetypes = _get_filetypes_enum()
+possible_filetypes = [x.name for x in filetypes]
 # endregion
 
 
@@ -95,29 +96,40 @@ def validate(
 @cmd.command()
 def convert(
     input_file: Annotated[Path, typer.Option("--file", "-f")],
-    file_type: Annotated[filetypes, typer.Option("--type", "-t")],
-    output_file: Annotated[str, typer.Option("--output", "-o")],
+    output_file: Annotated[Path, typer.Option("--output", "-o")],
+    file_type: Annotated[filetypes, typer.Option("--type", "-t")] = None,
 ) -> None:
     """Convert UMM to other filetypes"""
     output_file = pathlib.Path(output_file).resolve()
     umm = get_umm(input_file)
     umm_version = umm["info"]["version"]
-    match file_type.value:
+
+    if file_type is None:
+        if not (file_type := output_file.suffix[1:]):
+            print("Could not determine file type")
+            return
+        elif file_type not in possible_filetypes:
+            print(f"File type {file_type} not supported")
+            return
+    else:
+        file_type = file_type.name
+
+    match file_type:
         case "id3":
             # not yet implemented
             pass
         case "test":
             pass
         case _:
-            template_version = _version_map(file_type.value, umm_version)
+            template_version = _version_map(file_type, umm_version)
             template_file = (
                 importlib.resources.files("umm") /
                 "assets" /
                 "templates" /
-                file_type.value /
+                file_type /
                 f"{template_version}.template"
             )
-            print(_version_map("opf", umm_version))
+            print(_version_map(file_type, umm_version))
             with open(template_file, mode="r", encoding="utf-8") as file:
                 template = Template(file.read())
             with open(output_file, "w", encoding="utf-8") as file:
