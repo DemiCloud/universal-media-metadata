@@ -30,6 +30,9 @@
         "cover": {
           "type": "path"
         },
+        "language": {
+          "type": "string"
+        },
         "date": {
           "type": "date"
         },
