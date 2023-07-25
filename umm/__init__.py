@@ -27,16 +27,16 @@ console = Console()
 
 @app.command("version")
 def app_version() -> None:
-  """Print version and exit"""
-  print(f"{Constants.NAME}: Version {__version__}")
+    """Print version and exit"""
+    print(f"{Constants.NAME}: Version {__version__}")
 
 
 @app.callback()
 def main() -> None:
-  """CLI tool to manage Netbox"""
-  Variable.proj_dir = Path(__file__).parent.resolve()
+    """CLI tool to manage Netbox"""
+    Variable.proj_dir = Path(__file__).parent.resolve()
 
 
 def cli(app_name: str = "umm-cli"):
-  """Entry Point for the CLI Application"""
-  app()
+    """Entry Point for the CLI Application"""
+    app()

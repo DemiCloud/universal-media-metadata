@@ -4,27 +4,27 @@
   xmlns="http://www.idpf.org/2007/opf"
   version="2.0" unique-identifier="bookid">
   <metadata>
-  <meta name="cover" content="{{ umm['metadata']['cover'] }}"/>
-  <!-- Book Identifiers, ISBN, ASIN, etc -->
-  <dc:identifier opf:scheme="ISBN" id="bookid">{{ umm['metadata']['identifiers']['isbn'] }}</dc:identifier>
-  <dc:identifier opf:scheme="ASIN">{{ umm['metadata']['identifiers']['asin'] }}</dc:identifier>
-  <!-- Book Information -->
-  <dc:title>{{ umm['metadata']['title'] }}</dc:title>
-  <dc:language>{{ umm['metadata']['language'] }}</dc:language>
-  <dc:author>{{ umm['metadata']['author'] }}</dc:author>
-  <dc:narrator>{{ umm['metadata']['narrator'] }}</dc:narrator>
-  <dc:date opf:event="publication">{{ umm['metadata']['date'] }}</dc:date>
-  <dc:publisher>{{ umm['metadata']['publisher'] }}</dc:publisher>
-  <calibre:series>{{ umm['metadata']['series']['name'] }}</calibre:series>
-  <calibre:series_index>{{ umm['metadata']['series']['volume'] }}</calibre:series_index>
-  <!-- Genres -->
-  {%- for genre in umm['metadata']['genres'] %}
-  <dc:subject>{{ genre }}</dc:subject>
-  {%- endfor %}
-  <!-- Tags -->
-  {%- for tag in umm['metadata']['tags'] %}
-  <dc:subject>{{ tag }}</dc:subject>
-  {%- endfor %}
+    <meta name="cover" content="{{ umm['metadata']['cover'] }}"/>
+    <!-- Book Identifiers, ISBN, ASIN, etc -->
+    <dc:identifier opf:scheme="ISBN" id="bookid">{{ umm['metadata']['identifiers']['isbn'] }}</dc:identifier>
+    <dc:identifier opf:scheme="ASIN">{{ umm['metadata']['identifiers']['asin'] }}</dc:identifier>
+    <!-- Book Information -->
+    <dc:title>{{ umm['metadata']['title'] }}</dc:title>
+    <dc:language>{{ umm['metadata']['language'] }}</dc:language>
+    <dc:author>{{ umm['metadata']['author'] }}</dc:author>
+    <dc:narrator>{{ umm['metadata']['narrator'] }}</dc:narrator>
+    <dc:date opf:event="publication">{{ umm['metadata']['date'] }}</dc:date>
+    <dc:publisher>{{ umm['metadata']['publisher'] }}</dc:publisher>
+    <calibre:series>{{ umm['metadata']['series']['name'] }}</calibre:series>
+    <calibre:series_index>{{ umm['metadata']['series']['volume'] }}</calibre:series_index>
+    <!-- Genres -->
+    {%- for genre in umm['metadata']['genres'] %}
+    <dc:subject>{{ genre }}</dc:subject>
+    {%- endfor %}
+    <!-- Tags -->
+    {%- for tag in umm['metadata']['tags'] %}
+    <dc:subject>{{ tag }}</dc:subject>
+    {%- endfor %}
   </metadata>
 </package>
 
