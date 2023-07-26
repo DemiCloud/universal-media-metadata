@@ -1,7 +1,22 @@
 {
+  "id3": {
+    "type": "id3"
+  },
+  "test": {
+    "type": "template",
+    "extension": [
+      "test1",
+      "test2"
+    ],
+    "versions": {
+      "0.0.1": "0.0.1"
+    }
+  },
   "opf": {
     "type": "template",
-    "extension": "opf",
+    "extension": [
+      "opf"
+    ],
     "versions": {
       "0.0.1": "0.0.1"
     }

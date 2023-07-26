@@ -10,7 +10,7 @@ requires = [
   "rich",
   "tomlkit",
   "typer",
-  "typing"
+  "typing",
 ]
 
 [tool.pylint.format]
@@ -21,4 +21,4 @@ profile = "black"
 
 [tool.black]
 line-length = 88
-target-version = ['py37']
+target-version = ['py310']

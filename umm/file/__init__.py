@@ -7,6 +7,7 @@ import importlib
 import tomllib
 import pathlib
 import json
+
 from enum import Enum
 from pathlib import Path
 
@@ -26,15 +27,24 @@ from umm._vars import Constants
 
 cmd = typer.Typer()
 
+
 # region filetypes
-def _get_filetypes() -> dict:
+def _get_mappings() -> dict:
     mapping_file = importlib.resources.files("umm") / "assets" / Constants.Files.MAPPING
     with open(mapping_file, "r", encoding="utf-8") as file:
         mapping_dict = json.load(file)
     return mapping_dict
 
-mappings = _get_filetypes()
-filetypes = Enum("filetype", tuple(mappings.keys()))
+
+def _get_extensions() -> dict:
+    mapping_dict = _get_mappings()
+    return {
+        key: val["extension"] for key, val in mapping_dict.items() if "extension" in val
+    }
+
+
+mappings = _get_mappings()
+filetypes = Enum("filetype", {k: k for k in mappings})
 possible_filetypes = [x.name for x in filetypes]
 # endregion
 
@@ -86,26 +96,29 @@ def convert(
     umm = get_umm(input_file)
     umm_version = umm["info"]["version"]
 
+    # exts = _get_extensions()
+    # test = "test2"
+    # for key, value in exts.items():
+    #     if test in value:
+    #         filetype = key
+    # print(filetype)
+
     if file_type is None:
-        if not (file_type := output_file.suffix[1:]):
+        extensions = _get_extensions()
+        for key, value in extensions.items():
+            if output_file.suffix[1:] in value:
+                file_type = key
+                break
+        if file_type is None:
             print("Could not determine file type.")
             print("Try explicitly specifying the file type with the -o flag.")
-            return
-        if file_type not in possible_filetypes:
-            print(f"File type {file_type} not supported")
-            print(
-                "If you're sure this file type is supported, "
-                "specify it with the -o flag."
-            )
-            return
+            raise typer.Exit(1)
     else:
         file_type = file_type.name
 
     match file_type:
         case "id3":
             # not yet implemented
-            pass
-        case "test":
             pass
         case _:
             template_version = _version_map(file_type, umm_version)
@@ -120,8 +133,6 @@ def convert(
                 template = Template(file.read())
             with open(output_file, "w", encoding="utf-8") as file:
                 file.write(template.render(umm=umm))
-
-            print(f"Successfully converted {input_file} to {output_file}.")
 
 
 @cmd.command()
