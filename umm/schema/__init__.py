@@ -63,7 +63,8 @@ def normalize(umm: dict, umm_path: Path) -> dict:
 
     if not isinstance(umm["metadata"]["date"], datetime.date):
         print(
-            f"{umm['metadata']['date']} is not a valid date format. Date should be YYYY-MM-DD"
+            f"{umm['metadata']['date']} is not a valid date format. "
+            "Date should be YYYY-MM-DD"
         )
 
     if Path(umm["metadata"]["cover"]).is_absolute():

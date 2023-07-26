@@ -7,7 +7,6 @@ import importlib
 import tomllib
 import pathlib
 import json
-
 from enum import Enum
 from pathlib import Path
 
@@ -21,15 +20,20 @@ from typing_extensions import Annotated
 
 from umm.schema import normalize
 from umm.schema import validate as validate_schema
+from umm._vars import Constants
 
 # endregion
 
 cmd = typer.Typer()
-mapping_file = importlib.resources.files("umm") / "assets" / "mapping.json"
-with open(mapping_file, "r") as file:
-    mappings = json.load(file)
 
+# region filetypes
+def _get_filetypes() -> dict:
+    mapping_file = importlib.resources.files("umm") / "assets" / Constants.Files.MAPPING
+    with open(mapping_file, "r", encoding="utf-8") as file:
+        mapping_dict = json.load(file)
+    return mapping_dict
 
+mappings = _get_filetypes()
 filetypes = Enum("filetype", tuple(mappings.keys()))
 possible_filetypes = [x.name for x in filetypes]
 # endregion
@@ -87,10 +91,11 @@ def convert(
             print("Could not determine file type.")
             print("Try explicitly specifying the file type with the -o flag.")
             return
-        elif file_type not in possible_filetypes:
+        if file_type not in possible_filetypes:
             print(f"File type {file_type} not supported")
             print(
-                "If you're sure this file type is supported, specify it with the -o flag."
+                "If you're sure this file type is supported, "
+                "specify it with the -o flag."
             )
             return
     else:

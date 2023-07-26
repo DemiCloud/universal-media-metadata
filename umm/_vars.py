@@ -1,4 +1,5 @@
 """Internal Variables"""
+# pylint: disable=too-few-public-methods
 
 # region imports
 from dataclasses import dataclass
@@ -15,6 +16,11 @@ class Constants:
 
     # pylint: disable=invalid-name
     NAME: Final[str] = "Universal Media Metadata"
+
+    class Files:
+        """Filename Constants"""
+
+        MAPPING: Final[str] = "mapping.json"
 
     class Table:
         """table configuration"""

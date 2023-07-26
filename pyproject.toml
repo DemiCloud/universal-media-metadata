@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+  "black",
+  "dataclasses",
+  "jinja2",
+  "jsonschema",
+  "packaging",
+  "pre-commit",
+  "pylint",
+  "rich",
+  "tomlkit",
+  "typer",
+  "typing"
+]
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 88
+target-version = ['py37']

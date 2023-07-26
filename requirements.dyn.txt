@@ -1,8 +1,11 @@
-typer
-rich
-typing
-tomlkit
-packaging
-jsonschema
+black
 dataclasses
 jinja2
+jsonschema
+packaging
+pre-commit
+pylint
+rich
+tomlkit
+typer
+typing
