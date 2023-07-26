@@ -25,40 +25,18 @@ from umm.schema import validate as validate_schema
 # endregion
 
 cmd = typer.Typer()
+mapping_file = importlib.resources.files("umm") / "assets" / "mapping.json"
+with open(mapping_file, "r") as file:
+    mappings = json.load(file)
 
 
-# region convert templates to an enum
-# This section dynamically creates a list of options
-# for filetypes to choose for conversion
-def _get_filetypes_enum() -> Enum:
-    templates = [
-        resource.name
-        for resource in (
-            importlib.resources.files("umm") / "assets" / "templates"
-        ).iterdir()
-        if resource.is_dir()
-    ]
-
-    types_dict = {template: template for template in templates}
-
-    return Enum("filetype", types_dict)
-
-
-filetypes = _get_filetypes_enum()
+filetypes = Enum("filetype", tuple(mappings.keys()))
 possible_filetypes = [x.name for x in filetypes]
 # endregion
 
 
-@cmd.command()
-def test():
-    """Test command"""
-
-
 def _version_map(file_type: str, file_version: version.Version) -> str:
-    mapping_file = importlib.resources.files("umm") / "assets" / "mapping.json"
-    with open(mapping_file, "rb") as file:
-        mappings = json.load(file)
-    return mappings[file_type][str(file_version)]
+    return mappings[file_type]["versions"][str(file_version)]
 
 
 def get_umm(input_file: str):
@@ -90,7 +68,7 @@ def validate(
     if validate_schema(umm):
         print(f"{input_file} is a valid UMM version {umm['info']['version']} file")
     else:
-        print(f"Could not validate {input_file}")
+        print(f"{input_file} is not a valid UMM file")
 
 
 @cmd.command()
@@ -106,10 +84,14 @@ def convert(
 
     if file_type is None:
         if not (file_type := output_file.suffix[1:]):
-            print("Could not determine file type")
+            print("Could not determine file type.")
+            print("Try explicitly specifying the file type with the -o flag.")
             return
         elif file_type not in possible_filetypes:
             print(f"File type {file_type} not supported")
+            print(
+                "If you're sure this file type is supported, specify it with the -o flag."
+            )
             return
     else:
         file_type = file_type.name
@@ -123,17 +105,18 @@ def convert(
         case _:
             template_version = _version_map(file_type, umm_version)
             template_file = (
-                importlib.resources.files("umm") /
-                "assets" /
-                "templates" /
-                file_type /
-                f"{template_version}.template"
+                importlib.resources.files("umm")
+                / "assets"
+                / "templates"
+                / file_type
+                / f"{template_version}.template"
             )
-            print(_version_map(file_type, umm_version))
             with open(template_file, mode="r", encoding="utf-8") as file:
                 template = Template(file.read())
             with open(output_file, "w", encoding="utf-8") as file:
                 file.write(template.render(umm=umm))
+
+            print(f"Successfully converted {input_file} to {output_file}.")
 
 
 @cmd.command()

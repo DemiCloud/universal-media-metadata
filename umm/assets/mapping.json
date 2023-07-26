@@ -1,5 +1,9 @@
 {
   "opf": {
-    "0.0.1": "0.0.1"
+    "type": "template",
+    "extension": "opf",
+    "versions": {
+      "0.0.1": "0.0.1"
+    }
   }
 }
