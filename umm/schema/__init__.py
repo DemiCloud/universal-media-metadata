@@ -47,7 +47,7 @@ def validate(
         return False
 
 
-def normalize(umm: dict, umm_path: Path) -> dict:
+def normalize(umm: dict) -> dict:
     """normalized the metadata dictionary
 
     Args:
@@ -67,13 +67,4 @@ def normalize(umm: dict, umm_path: Path) -> dict:
             "Date should be YYYY-MM-DD"
         )
 
-    if Path(umm["metadata"]["cover"]).is_absolute():
-        umm["metadata"]["cover"] = (umm_path / umm["metadata"]["cover"]).resolve()
-    else:
-        umm["metadata"]["cover"] = umm_path / umm["metadata"]["cover"]
-
-    try:
-        umm["metadata"]["cover"] = Path(umm["metadata"]["cover"])
-    except TypeError:
-        print("metadata.cover should be a valid path")
     return umm

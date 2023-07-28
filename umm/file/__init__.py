@@ -7,9 +7,11 @@ import importlib
 import tomllib
 import pathlib
 import json
+import sys
 
 from enum import Enum
 from pathlib import Path
+import typing
 
 import typer
 from jinja2 import Template
@@ -53,7 +55,7 @@ def _version_map(file_type: str, file_version: version.Version) -> str:
     return mappings[file_type]["versions"][str(file_version)]
 
 
-def get_umm(input_file: str):
+def get_umm(input_file: typing.BinaryIO | typing.TextIO) -> dict:
     """Opens and parses the UMM file
 
     Args:
@@ -62,10 +64,11 @@ def get_umm(input_file: str):
     Returns:
       _type_: returns the UMM file as a dict
     """
-    input_file = pathlib.Path(input_file).resolve()
-    with input_file.open("rb") as file:
-        umm = tomllib.load(file)
-    umm = normalize(umm, input_file.parent)
+    # input_file = pathlib.Path(input_file).resolve()
+    # with input_file.open("rb") as file:
+    #     umm = tomllib.load(file)
+    umm = tomllib.loads(input_file.read())
+    umm = normalize(umm)
     return umm
 
 
@@ -87,21 +90,21 @@ def validate(
 
 @cmd.command()
 def convert(
-    input_file: Annotated[Path, typer.Option("--file", "-f")],
-    output_file: Annotated[Path, typer.Option("--output", "-o")],
+    input_file: Annotated[Path, typer.Option("--file", "-f")] = "-",
+    output_file: Annotated[Path, typer.Option("--output", "-o")] = "-",
     file_type: Annotated[filetypes, typer.Option("--type", "-t")] = None,
 ) -> None:
     """Convert UMM to other filetypes"""
-    output_file = pathlib.Path(output_file).resolve()
+    if str(input_file) == "-":
+        input_file = sys.stdin
+    else:
+        input_file = pathlib.Path(input_file).resolve()
+        input_file = open(input_file, "r", encoding="utf-8")
+    if str(output_file) != "-":
+        output_file = pathlib.Path(output_file).resolve()
+
     umm = get_umm(input_file)
     umm_version = umm["info"]["version"]
-
-    # exts = _get_extensions()
-    # test = "test2"
-    # for key, value in exts.items():
-    #     if test in value:
-    #         filetype = key
-    # print(filetype)
 
     if file_type is None:
         extensions = _get_extensions()
@@ -131,8 +134,12 @@ def convert(
             )
             with open(template_file, mode="r", encoding="utf-8") as file:
                 template = Template(file.read())
-            with open(output_file, "w", encoding="utf-8") as file:
-                file.write(template.render(umm=umm))
+
+            if str(output_file) == "-":
+                sys.stdout.write(template.render(umm=umm))
+            else:
+                with open(output_file, "w", encoding="utf-8") as file:
+                    file.write(template.render(umm=umm))
 
 
 @cmd.command()
