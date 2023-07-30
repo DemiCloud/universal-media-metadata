@@ -55,8 +55,14 @@ possible_filetypes = [x.name for x in filetypes]
 # endregion
 
 
-def _version_map(file_type: str, file_version: version.Version) -> str:
-    return mappings[file_type]["versions"][str(file_version)]
+def _version_map(file_type: str, umm_version: version.Version) -> str:
+    umm_versions_map = list(mappings[file_type]["versions"].items())
+    for i in umm_versions_map:
+        if umm_version > version.parse(i[1]):
+            minimum_version = i
+        else:
+            break
+    return minimum_version[0]
 
 
 def get_umm(input_file: typing.BinaryIO | typing.TextIO) -> dict:
