@@ -10,7 +10,6 @@ import json
 import sys
 
 from enum import Enum
-from pathlib import Path
 import typing
 
 import typer
@@ -45,6 +44,11 @@ def _get_extensions() -> dict:
     }
 
 
+def _get_type(filetype: str) -> str:
+    mapping_dict = _get_mappings()
+    return mapping_dict[filetype]["type"]
+
+
 mappings = _get_mappings()
 filetypes = Enum("filetype", {k: k for k in mappings})
 possible_filetypes = [x.name for x in filetypes]
@@ -74,7 +78,7 @@ def get_umm(input_file: typing.BinaryIO | typing.TextIO) -> dict:
 
 @cmd.command()
 def validate(
-    input_file: Annotated[Path, typer.Option("--file", "-f")],
+    input_file: Annotated[pathlib.Path, typer.Option("--file", "-f")],
 ) -> None:
     """Validates a UMM file
 
@@ -90,9 +94,9 @@ def validate(
 
 @cmd.command()
 def convert(
-    input_file: Annotated[Path, typer.Option("--file", "-f")] = "-",
-    output_file: Annotated[Path, typer.Option("--output", "-o")] = "-",
-    file_type: Annotated[filetypes, typer.Option("--type", "-t")] = None,
+    input_file: Annotated[pathlib.Path, typer.Option("--file", "-f")] = "-",
+    output_file: Annotated[pathlib.Path, typer.Option("--output", "-o")] = "-",
+    output_type: Annotated[filetypes, typer.Option("--type", "-t")] = None,
 ) -> None:
     """Convert UMM to other filetypes"""
     if str(input_file) == "-":
@@ -106,30 +110,31 @@ def convert(
     umm = get_umm(input_file)
     umm_version = umm["info"]["version"]
 
-    if file_type is None:
+    if output_type is None:
         extensions = _get_extensions()
         for key, value in extensions.items():
             if output_file.suffix[1:] in value:
-                file_type = key
+                output_type = key
                 break
-        if file_type is None:
+        if output_type is None:
             print("Could not determine file type.")
             print("Try explicitly specifying the file type with the -o flag.")
             raise typer.Exit(1)
     else:
-        file_type = file_type.name
+        output_type = output_type.name
 
-    match file_type:
+    map_type = _get_type(output_type)
+    match map_type:
         case "id3":
             # not yet implemented
             pass
-        case _:
-            template_version = _version_map(file_type, umm_version)
+        case "template":
+            template_version = _version_map(output_type, umm_version)
             template_file = (
                 importlib.resources.files("umm")
                 / "assets"
                 / "templates"
-                / file_type
+                / output_type
                 / f"{template_version}.template"
             )
             with open(template_file, mode="r", encoding="utf-8") as file:
@@ -140,6 +145,9 @@ def convert(
             else:
                 with open(output_file, "w", encoding="utf-8") as file:
                     file.write(template.render(umm=umm))
+        case _:
+            print(f"{map_type} is not recognized")
+            raise typer.Exit(1)
 
 
 @cmd.command()

@@ -1,11 +1,11 @@
 black
 dataclasses
 jinja2
-jsonschema
+jsonschema[format-nongpl]
 packaging
 pre-commit
 pylint
 rich
 tomlkit
-typer
+typer[all]
 typing
