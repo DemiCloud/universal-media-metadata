@@ -5,11 +5,10 @@
   "test": {
     "type": "template",
     "extension": [
-      "test1",
-      "test2"
+      "test"
     ],
     "versions": {
-      "0.0.1": "0.0.1",
+      "0.0.1": "0.0.1"
     }
   },
   "opf": {
