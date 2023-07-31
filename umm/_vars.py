@@ -31,6 +31,11 @@ class Constants:
             JUSTIFY: Final[str] = "left"
             STYLE: Final[str] = "bold cyan"
 
+    class Template:
+        """Template Configurations"""
+
+        EXTENSION: Final[str] = "jinja"
+
 
 @dataclass
 class Config:

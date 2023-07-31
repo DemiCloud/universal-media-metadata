@@ -2,6 +2,15 @@
   "id3": {
     "type": "id3"
   },
+  "nfo": {
+    "type": "template",
+    "extension": [
+      "nfo"
+    ],
+    "versions": {
+      "0.0.1": "0.0.1"
+    }
+  },
   "test": {
     "type": "template",
     "extension": [

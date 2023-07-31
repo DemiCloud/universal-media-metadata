@@ -11,9 +11,9 @@ import sys
 
 from enum import Enum
 import typing
+import jinja2
 
 import typer
-from jinja2 import Template
 from packaging import version
 
 # This overwrites `print` on purpose
@@ -58,11 +58,29 @@ possible_filetypes = [x.name for x in filetypes]
 def _version_map(file_type: str, umm_version: version.Version) -> str:
     umm_versions_map = list(mappings[file_type]["versions"].items())
     for i in umm_versions_map:
-        if umm_version > version.parse(i[1]):
+        if umm_version >= version.parse(i[1]):
             minimum_version = i
         else:
             break
     return minimum_version[0]
+
+
+def _get_template(template_file: pathlib.Path) -> jinja2.environment.Template:
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader(
+            "umm",
+            package_path="assets/templates",
+            encoding="utf-8",
+        ),
+        auto_reload=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    return env.get_template(str(template_file))
+
+
+def _render_template():
+    pass
 
 
 def get_umm(input_file: typing.BinaryIO | typing.TextIO) -> dict:
@@ -137,15 +155,10 @@ def convert(
         case "template":
             template_version = _version_map(output_type, umm_version)
             template_file = (
-                importlib.resources.files("umm")
-                / "assets"
-                / "templates"
-                / output_type
-                / f"{template_version}.template"
+                pathlib.Path(output_type)
+                / f"{template_version}.{Constants.Template.EXTENSION}"
             )
-            with open(template_file, mode="r", encoding="utf-8") as file:
-                template = Template(file.read())
-
+            template = _get_template(template_file)
             if str(output_file) == "-":
                 sys.stdout.write(template.render(umm=umm))
             else:

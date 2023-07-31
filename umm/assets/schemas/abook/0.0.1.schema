@@ -17,7 +17,6 @@
       },
       "required": [
         "class",
-        "uuid",
         "version"
       ]
     },
@@ -89,7 +88,6 @@
         "genres",
         "narrator",
         "publisher",
-        "tags",
         "title",
         "identifiers",
         "series"
